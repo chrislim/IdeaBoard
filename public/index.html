@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>IdeaBoard</title>
+<!-- 
+sound effects are from:
+http://www.pacdv.com/sounds/interface_sounds-3.html
+http://www.freesfx.co.uk/sfx/roll?p=3 (see license terms)
+-->
+
+<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.css"/>
+<link rel="stylesheet" href="board.css"/>
+</head>
+<body ng-app="IdeaBoard" ng-controller="BoardCtrl">
+<script type="text/javascript" charset="utf-8" src="jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="buzz/dist/buzz.js"></script>
+<script type="text/javascript" src="showdown/compressed/showdown.js"></script>
+<script type="text/javascript" src="angular/angular.min.js"></script>
+<script type="text/javascript" src="angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script type="text/javascript" src="angular-resource/angular-resource.min.js"></script>
+<script type="text/javascript">
+	
+	var mySound = new buzz.sound("soundtrack", {
+		formats: ["wav"]
+	});
+
+	mySound.play().loop();
+
+	angular.module('IdeaBoard', ['ui.bootstrap', 'ngResource'])
+		.filter('markdown', function ($sce) {
+			var converter = new Showdown.converter();
+			return function (value) {
+				var html = converter.makeHtml(value || '');
+				return $sce.trustAsHtml(html);
+			};
+		})
+		.factory('Idea', function ($resource) {
+			return $resource('/ideas/:id', {id: '@id'}, 
+				{ 'query': { method: 'GET', isArray: false },
+				  'save': { method: 'POST', transformRequest: function (data, headersGetter) {
+							return JSON.stringify({ 'ideas' : [data] }); 
+						}  
+					}  
+				});
+		})
+		.controller('BoardCtrl', function ($scope, $modal, Idea) {
+			var ideas = Idea.query(function () {
+				$scope.ideas = ideas.ideas;
+				console.log($scope.ideas);
+			});
+
+			$scope.sounds = {
+				show: new Audio("sound118.wav"),
+				hide: new Audio("sound116.wav"),
+				rollover: new Audio("rollover.wav")
+			};
+
+			$scope.openAddItemForm = function () {
+				var modalInstance = $modal.open({
+					templateUrl: 'addIdeaForm.html',
+					controller: 'AddIdeaCtrl',
+					windowClass: 'idea-form' 
+				});
+
+				modalInstance.result.then(function (idea) {
+					var newIdea = new Idea(idea);
+					newIdea.$save();
+					$scope.ideas.push(idea);
+				}, function () {
+				});
+			};
+		})
+		.controller('AddIdeaCtrl', function ($scope, $modalInstance) {
+			$scope.newIdea = {};
+
+			$scope.ok = function () {
+				$modalInstance.close($scope.newIdea);
+			};
+			$scope.cancel = function () {
+				$modalInstance.dismiss('cancel');	
+			};
+		})
+		.controller('IdeaCtrl', function ($scope, $modal, Idea) {
+			var thisIdea = new Idea($scope.idea);
+			
+			$scope.clickEffect = function () {
+				$scope.sounds.show.load();
+				$scope.sounds.show.play();
+
+				var modalInstance = $modal.open({
+					templateUrl: 'ideaDetail.html',
+					controller: 'IdeaDetailCtrl',
+					resolve: {
+						idea: function () {
+							return $scope.idea;
+						}
+					},
+					windowClass: 'idea-form'
+				});
+
+				modalInstance.result.then(function (ideaAction) {
+					$scope.sounds.hide.load();
+					$scope.sounds.hide.play();
+					switch (ideaAction.action) {
+						case 'delete':
+							$scope.ideas.splice($scope.$index, 1);
+							thisIdea.$delete();					
+							break;
+						case 'edit':
+							thisIdea.$save();
+							break;
+					}
+					
+				}, function () {
+					$scope.sounds.hide.load();
+					$scope.sounds.hide.play();
+				});
+			};
+
+			$scope.hovered = false;
+
+			$scope.mouseEnterEffect = function () {
+				$scope.hovered = true;
+				$scope.sounds.rollover.load();
+				$scope.sounds.rollover.play();
+			};
+
+			$scope.mouseLeaveEffect = function () {
+				$scope.hovered = false;
+			};
+		})
+		.controller('IdeaDetailCtrl', function ($scope, $modalInstance, idea) {
+			$scope.idea = idea;
+			$scope.close = function () {
+				$modalInstance.dismiss('closed');
+			};
+			$scope.edit = function () {
+				$modalInstance.close({
+					'action': 'edit',
+					'idea': $scope.idea
+				});	
+			};
+			$scope.delete = function () {
+				$modalInstance.close({
+					'action': 'delete',
+					'idea': $scope.idea
+				});
+			};
+		});
+</script>
+	<script type="text/ng-template" id="addIdeaForm.html">
+		<div class="modal-header">
+			<h3>Add Idea</h3>
+		</div>
+		<form role="form" name="addIdeaForm">
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="title">Title</label>
+					<input type="text" name="title" ng-model="newIdea.title" class="form-control"/>
+				</div>
+				<div class="form-group">
+					<label for="description">Description</label>
+					<textarea name="description" ng-model="newIdea.description" class="form-control"></textarea>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit" ng-click="ok()">Save</button><button class="btn btn-default" ng-click="cancel()">Close</button>
+			</div>
+		</form>
+	</script>
+
+	<script type="text/ng-template" id="ideaDetail.html">
+		<div class='details'>
+			<div class="modal-header">
+				<h3>{{idea.title}}</h3>
+			</div>
+			<div class="modal-body">
+				<div ng-bind-html="idea.description | markdown"></div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" ng-click="edit()">Edit</button>
+				<button class="btn btn-danger" ng-click="delete()">Delete</button>
+				<button class="btn btn-default" ng-click="close()">Close</button>
+			</div>
+		</div>
+	</script>
+
+	<div class="header">
+		<a href="#" class="button" ng-click="openAddItemForm()">
+			<span class="shine"></span>
+			<span class="text">Add Idea</span>
+		</a>
+		<a href="#" class="button" onClick="mySound.stop()">
+			<span class="shine"></span>
+			<span class="glyphicon glyphicon-volume-off"></span>
+			<span class="test">Turn off sound</span>
+		</a>
+	</div>
+	<div class="sticky" ng-class="{selected : hovered}" ng-repeat="idea in ideas" ng-mouseenter="mouseEnterEffect()" ng-mouseleave="mouseLeaveEffect()" ng-click="clickEffect()" ng-controller="IdeaCtrl">
+		<h2>{{idea.title}}</h2>
+		<div ng-bind-html="idea.description | markdown"></div>
+		<span class="shine"></span>
+	</div>
+</body>
+</html>
+

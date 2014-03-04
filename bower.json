@@ -1,0 +1,14 @@
+{
+  "name": "IdeaBoard",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "buzz": "~1.1.0",
+    "jquery": "*",
+    "angular": "~1.2.14",
+    "bootstrap": "~3.1.1",
+    "showdown": "~0.3.1",
+    "angular-bootstrap": "~0.10.0",
+    "angular-resource": "~1.2.14"
+  }
+}

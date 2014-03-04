@@ -1,0 +1,203 @@
+.selected {
+	outline: 5px solid #3af;
+	-webkit-outline-radius: 5px;
+	-moz-outline-radius: 5px;
+}
+
+body {
+	background: 
+	-webkit-radial-gradient(black 14%, transparent 16%) 0 0, 
+	-webkit-radial-gradient(black 14%, transparent 16%) 8px 8px,
+	-webkit-radial-gradient(rgba(255,255,255,.1) 15%, transparent 25%) 0 1px,
+	-webkit-radial-gradient(rgba(255,255,255,.1) 15%, transparent 25%) 8px 9px;
+	-moz-radial-gradient(black 14%, transparent 16%) 0 0, 
+	-moz-radial-gradient(black 14%, transparent 16%) 8px 8px,
+	-moz-radial-gradient(rgba(255,255,255,.1) 15%, transparent 25%) 0 1px,
+	-moz-radial-gradient(rgba(255,255,255,.1) 15%, transparent 25%) 8px 9px;
+	background-color: #343434;
+	background-size: 16px 16px;
+	padding: 0px;
+	margin: 0px;
+}
+
+.header {
+	position: relative;
+	padding: 2px;
+	top: 0px;
+	left: 0px;
+	margin: 0px;
+	width: 100%;
+	background: #545454;
+	color: #eee;
+	border-bottom: 1px solid black;
+	vertical-align: middle;		
+}
+
+.sticky {
+	position: relative;
+	background-color: #dd1;
+	margin: 10px;
+	display: inline-block;
+	height: 250px;
+	width: 250px;
+	padding: 5px;
+	overflow: hidden;
+	vertical-align: top;
+	cursor: pointer;
+	letter-spacing: -1px;
+	font-family: arial;
+	border-radius: 5px;
+	-webkit-box-shadow: inset 0px 1px 1px 0px rgba(255,255,255,.4);
+	-moz-box-shadow: inset 0px 1px 1px 0px rgba(255,255,255,.4);
+	box-shadow: inset 0px 1px 1px 0px rgba(255,255,255,.4);
+	background-image: -webkit-linear-gradient(bottom, #c6c600 50%, #cc0 49%, #dd1 50%, #dd1 100%);
+	background-image: -moz-linear-gradient(bottom, #383838 0%, #444444 49%, #dd1 50%, #dd1 100%);
+	background-image: -ms-linear-gradient(bottom, #383838 0%, #444444 49%, #dd1 50%, #dd1 100%);
+	background-image: -o-linear-gradient(bottom, #383838 0%, #444444 49%, #dd1 50%, #dd1 100%);
+	background-image: linear-gradient(bottom, #383838 0%, #444444 49%, #dd1 50%, #dd1 100%);
+}
+
+.idea-form .modal-content {
+	background-color: #dd1;
+}
+
+.modal-header {
+	border-bottom: 1px solid #888;
+}
+
+.modal-footer {
+	 border-top: 1px solid #888;
+}
+
+.details {
+	background-color: yellow;
+	margin: auto 10px;
+	position: fixed;
+	top: 20px;
+	padding: 5px;
+	cursor: pointer;
+	z-index:1002;
+	letter-spacing: -1px;
+	font-family: arial;
+	border-radius: 5px;
+}
+
+.black_overlay{
+	position: fixed;
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	z-index:1001;
+	opacity:.6;
+}
+
+/* http://cssdeck.com/labs/glossy-button-with-shine */
+a.button {
+	width: 200px;
+	height: 50px;
+	background: #333;
+	display: inline-block;
+	position: relative;
+	margin: 0 auto 0;
+	overflow: hidden;
+	border: 1px solid #333333;
+	color: white;
+	text-decoration: none;
+	
+	-webkit-box-shadow: inset 0px 1px 1px 0px rgba(255,255,255,.4);
+	-moz-box-shadow: inset 0px 1px 1px 0px rgba(255,255,255,.4);
+	box-shadow: inset 0px 1px 1px 0px rgba(255,255,255,.4);
+	
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	
+	
+	-webkit-transition: all 0.2s ease;
+	-moz-transition: all 0.2s ease;
+	-ms-transition: all 0.2s ease;
+	-o-transition: all 0.2s ease;
+	transition: all 0.2s ease;
+	
+	background-image: -webkit-linear-gradient(bottom, #383838 0%, #444444 49%, #555 50%, #555 100%);
+	background-image: -moz-linear-gradient(bottom, #383838 0%, #444444 49%, #555 50%, #555 100%);
+	background-image: -ms-linear-gradient(bottom, #383838 0%, #444444 49%, #555 50%, #555 100%);
+	background-image: -o-linear-gradient(bottom, #383838 0%, #444444 49%, #555 50%, #555 100%);
+	background-image: linear-gradient(bottom, #383838 0%, #444444 49%, #555 50%, #555 100%);
+}
+
+
+.sticky span.shine {
+	height: 500px;
+	width: 20px;
+	top: -100px;
+	left: -140px;
+}
+
+a.button span.text {
+	position: absolute;
+	top: 16px;
+	left: 65px;
+	font: 15px Arial;
+}
+
+a.button span.shine {
+	height: 400px;
+	width: 20px;
+	top: -80px;
+	left: -20px;
+}
+
+span.shine {
+	content: '';
+	position: absolute;
+	background: white;
+	display: block;
+	opacity: 0.8;
+	
+	-webkit-box-shadow: 0px 0px 20px 10px white; 
+	-moz-box-shadow: 0px 0px 20px 10px white; 
+	box-shadow: 0px 0px 20px 10px white; 
+	
+	-webkit-transform: rotate(-45deg);	
+	-moz-transform: rotate(-45deg);
+	-ms-transform: rotate(-45deg);
+	-o-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+	
+	-webkit-transition: all 0.4s ease;
+	-moz-transition: all 0.4s ease;
+	-ms-transition: all 0.4s ease;
+	-o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+}
+
+a.button:hover {
+	-webkit-box-shadow: inset 0px 1px 10px 0px rgba(255,255,255,.4), 0px 3px 3px 0px rgba(0,0,0,0.4);
+	-moz-box-shadow: inset 0px 1px 10px 0px rgba(255,255,255,.4), 0px 3px 3px 0px rgba(0,0,0,0.4);
+	box-shadow: inset 0px 1px 10px 0px rgba(255,255,255,.4), 0px 3px 3px 0px rgba(0,0,0,0.4);
+}
+
+a.button:active {
+	-webkit-box-shadow: inset 0px 1px 15px 0px rgba(0,0,0,.4), inset 0px 1px 1px 1px rgba(0,0,0,.2), 0px 1px 1px 0 rgba(255,255,255,.5);
+	-moz-box-shadow: inset 0px 1px 15px 0px rgba(0,0,0,.4), inset 0px 1px 1px 1px rgba(0,0,0,.2), 0px 1px 1px 0 rgba(255,255,255,.5);
+	box-shadow: inset 0px 1px 15px 0px rgba(0,0,0,.4), inset 0px 1px 1px 1px rgba(0,0,0,.2), 0px 1px 1px 0 rgba(255,255,255,.5);
+}
+
+a.button:hover span.shine {
+	left: 170px;
+	top: -300px;
+}
+
+.selected span.shine {
+	left: 330px;
+	top: -290px;
+}
+
+audio {
+	position: absolute;
+	right: 0px;
+}
+

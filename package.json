@@ -1,0 +1,23 @@
+{
+  "name": "IdeaBoard",
+  "version": "0.0.0",
+  "description": "A lightweight place to put your ideas.",
+  "repository": "",
+  "scripts": {
+    "start": "start",
+    "test": "test"
+  },
+  "keywords": [
+    "idea",
+    "board"
+  ],
+  "author": "Chris Lim",
+  "license": "MIT",
+  "dependencies": {
+    "nedb": "~0.10.4",
+    "express": "~3.4.8",
+    "nconf": "^0.6.9",
+    "helmet": "^0.1.2",
+    "fortune": "^0.1.17"
+  }
+}

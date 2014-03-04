@@ -1,0 +1,10 @@
+{
+	"express": {
+		"port": 3000,
+		"staticCache": 6048000000
+	},
+	"db": {
+		"filename": "ideas.db",
+		"autoload": true
+	}
+}
