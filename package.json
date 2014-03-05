@@ -4,7 +4,7 @@
   "description": "A lightweight place to put your ideas.",
   "repository": "",
   "scripts": {
-    "start": "start",
+    "start": "node app",
     "test": "test"
   },
   "keywords": [
