@@ -7,6 +7,10 @@ The default soundtrack loop was generated from GarageBand and the sound effects 
 * http://www.pacdv.com/sounds/interface_sounds-3.html
 * http://www.freesfx.co.uk/sfx/roll?p=3 (note the license terms)
 
+Screenshot of recent release:
+
+<img style="border: 1px solid #999; padding: 2px" src="https://raw.github.com/chrislim/IdeaBoard/master/media/IdeaBoard_screenshot.png" width="500px"/>
+
 #Installation
 
 ## Prerequisites
