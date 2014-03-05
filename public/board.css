@@ -33,6 +33,12 @@ body {
 	vertical-align: middle;		
 }
 
+.header h1 {
+	text-align: center;
+	vertical-align: middle;
+	font-size: 22px;
+}
+
 .sticky {
 	position: relative;
 	background-color: #dd1;

@@ -154,7 +154,6 @@
 		})
 		.controller('IdeaDetailCtrl', function ($scope, $modalInstance, idea, IdeaModel) {
 			$scope.idea = idea;
-			console.log(idea);
 			$scope.editedIdea = new IdeaModel($scope.idea);
 
 			$scope.close = function () {
@@ -277,7 +276,7 @@
 	</script>
 
 	<div class="header">
-		<a href="#" class="button" ng-click="openAddItemForm()">
+		<a href="#" class="button pull-left" ng-click="openAddItemForm()">
 			<span class="shine"></span>
 			<span class="text">Add Idea</span>
 		</a>
@@ -285,6 +284,8 @@
 			<span class="shine"></span>
 			<span class="text">Preferences</span>
 		</a>
+		<h1 class="center-block">IdeaBoard</h1>
+
 	</div>
 	<div class="sticky" ng-class="{selected : hovered}" ng-repeat="idea in ideas" ng-mouseenter="mouseEnterEffect()" ng-mouseleave="mouseLeaveEffect()" ng-click="clickEffect()" ng-controller="IdeaCtrl">
 		<h2>{{idea.title}}</h2>
