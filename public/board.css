@@ -105,6 +105,9 @@ a.button {
 	border: 1px solid #333333;
 	color: white;
 	text-decoration: none;
+	text-align: center;
+	vertical-align: middle;
+	padding-top: 13px;
 	
 	-webkit-box-shadow: inset 0px 1px 1px 0px rgba(255,255,255,.4);
 	-moz-box-shadow: inset 0px 1px 1px 0px rgba(255,255,255,.4);
@@ -137,9 +140,6 @@ a.button {
 }
 
 a.button span.text {
-	position: absolute;
-	top: 16px;
-	left: 65px;
 	font: 15px Arial;
 }
 

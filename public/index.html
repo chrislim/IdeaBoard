@@ -19,14 +19,8 @@ http://www.freesfx.co.uk/sfx/roll?p=3 (see license terms)
 <script type="text/javascript" src="angular/angular.min.js"></script>
 <script type="text/javascript" src="angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script type="text/javascript" src="angular-resource/angular-resource.min.js"></script>
+<script type="text/javascript" src="lodash/dist/lodash.js"></script>
 <script type="text/javascript">
-	
-	var mySound = new buzz.sound("soundtrack", {
-		formats: ["wav"]
-	});
-
-	mySound.play().loop();
-
 	angular.module('IdeaBoard', ['ui.bootstrap', 'ngResource'])
 		.filter('markdown', function ($sce) {
 			var converter = new Showdown.converter();
@@ -35,26 +29,50 @@ http://www.freesfx.co.uk/sfx/roll?p=3 (see license terms)
 				return $sce.trustAsHtml(html);
 			};
 		})
-		.factory('Idea', function ($resource) {
+		.factory('IdeaModel', function ($resource) {
 			return $resource('/ideas/:id', {id: '@id'}, 
 				{ 'query': { method: 'GET', isArray: false },
 				  'save': { method: 'POST', transformRequest: function (data, headersGetter) {
 							return JSON.stringify({ 'ideas' : [data] }); 
 						}  
+					},
+				  'update': { method: 'PUT', transformRequest: function (data, headersGetter) {
+						return JSON.stringify({ 'ideas' : [data] });
+						}
 					}  
 				});
 		})
-		.controller('BoardCtrl', function ($scope, $modal, Idea) {
-			var ideas = Idea.query(function () {
+		.factory('Sound', function () {
+			return {
+				sounds: {
+					show: new buzz.sound("sound118.wav"),
+					hide: new buzz.sound("sound116.wav"),
+					rollover: new buzz.sound("rollover.wav"),
+					soundtrack: new buzz.sound("soundtrack", { formats: ["wav"] })
+				},
+				play: function (sound) {
+					return this.sounds[sound].play();
+				},
+				toggleMute: function () {
+					for (var i in this.sounds) {
+						if(this.sounds.hasOwnProperty(i)) {
+							this.sounds[i].toggleMute();
+						}
+					}
+				}
+			};
+		})
+		.factory('Preferences', function () {
+			return {
+				soundEnabled: true
+			};
+		})
+		.controller('BoardCtrl', function ($scope, $modal, IdeaModel, Sound) {
+			Sound.play('soundtrack').loop();	
+			var ideas = IdeaModel.query(function () {
 				$scope.ideas = ideas.ideas;
 				console.log($scope.ideas);
 			});
-
-			$scope.sounds = {
-				show: new Audio("sound118.wav"),
-				hide: new Audio("sound116.wav"),
-				rollover: new Audio("rollover.wav")
-			};
 
 			$scope.openAddItemForm = function () {
 				var modalInstance = $modal.open({
@@ -64,11 +82,22 @@ http://www.freesfx.co.uk/sfx/roll?p=3 (see license terms)
 				});
 
 				modalInstance.result.then(function (idea) {
-					var newIdea = new Idea(idea);
+					var newIdea = new IdeaModel(idea);
 					newIdea.$save();
 					$scope.ideas.push(idea);
 				}, function () {
 				});
+			};
+
+			$scope.openPreferences = function () {
+				var modalInstance = $modal.open({
+					templateUrl: 'preferences.html',
+					controller: 'PreferencesCtrl',
+					windowClass: 'idea-form'
+				});
+
+				modalInstance.result.then(function (idea) {
+				}, function () {});	
 			};
 		})
 		.controller('AddIdeaCtrl', function ($scope, $modalInstance) {
@@ -81,12 +110,9 @@ http://www.freesfx.co.uk/sfx/roll?p=3 (see license terms)
 				$modalInstance.dismiss('cancel');	
 			};
 		})
-		.controller('IdeaCtrl', function ($scope, $modal, Idea) {
-			var thisIdea = new Idea($scope.idea);
-			
+		.controller('IdeaCtrl', function ($scope, $modal, Sound) {
 			$scope.clickEffect = function () {
-				$scope.sounds.show.load();
-				$scope.sounds.show.play();
+				Sound.play('show');
 
 				var modalInstance = $modal.open({
 					templateUrl: 'ideaDetail.html',
@@ -100,21 +126,21 @@ http://www.freesfx.co.uk/sfx/roll?p=3 (see license terms)
 				});
 
 				modalInstance.result.then(function (ideaAction) {
-					$scope.sounds.hide.load();
-					$scope.sounds.hide.play();
+					Sound.play('hide');
 					switch (ideaAction.action) {
 						case 'delete':
 							$scope.ideas.splice($scope.$index, 1);
-							thisIdea.$delete();					
 							break;
-						case 'edit':
-							thisIdea.$save();
+						case 'close':
+							var indexToUpdate = _.findIndex($scope.ideas, function (i) {
+								return i.id === ideaAction.idea.id;
+							});	
+							$scope.ideas[indexToUpdate] = ideaAction.idea;
 							break;
 					}
 					
 				}, function () {
-					$scope.sounds.hide.load();
-					$scope.sounds.hide.play();
+					Sound.play('hide');
 				});
 			};
 
@@ -122,31 +148,56 @@ http://www.freesfx.co.uk/sfx/roll?p=3 (see license terms)
 
 			$scope.mouseEnterEffect = function () {
 				$scope.hovered = true;
-				$scope.sounds.rollover.load();
-				$scope.sounds.rollover.play();
+				Sound.play('rollover');
 			};
 
 			$scope.mouseLeaveEffect = function () {
 				$scope.hovered = false;
 			};
 		})
-		.controller('IdeaDetailCtrl', function ($scope, $modalInstance, idea) {
-			$scope.idea = idea;
+		.controller('IdeaDetailCtrl', function ($scope, $modalInstance, idea, IdeaModel) {
+			$scope.idea = new IdeaModel(idea);
+			$scope.editedIdea = angular.copy($scope.idea);
+
 			$scope.close = function () {
-				$modalInstance.dismiss('closed');
-			};
-			$scope.edit = function () {
 				$modalInstance.close({
-					'action': 'edit',
-					'idea': $scope.idea
-				});	
-			};
-			$scope.delete = function () {
-				$modalInstance.close({
-					'action': 'delete',
+					'action': 'close',
 					'idea': $scope.idea
 				});
 			};
+			$scope.edit = function () {
+				$scope.editing = true;
+			};
+			$scope.save = function () {
+				$scope.idea = angular.copy($scope.editedIdea);
+				$scope.idea.$update();	
+				$scope.editing = false;
+			};
+			$scope.delete = function () {
+				$scope.idea.$delete();
+				$modalInstance.close({
+					'action': 'delete',
+				});
+			};
+		})
+		.controller('PreferencesCtrl', function ($scope, $modalInstance, Sound, Preferences) {
+			$scope.soundPreferenceMsg = function () {
+				return Preferences.soundEnabled ? "Turn off sounds" : "Turn on sounds";
+			};
+
+			$scope.soundIcon = function () {
+				return Preferences.soundEnabled ? "large glyphicon glyphicon-volume-off" : "large glyphicon glyphicon-volume-up";
+			};
+
+			$scope.toggleMute = function () {
+				Preferences.soundEnabled = !Preferences.soundEnabled;
+				Sound.toggleMute();
+			};
+
+			$scope.close = function () {
+				$modalInstance.dismiss('closed');
+			};
+				
 		});
 </script>
 	<script type="text/ng-template" id="addIdeaForm.html">
@@ -161,7 +212,7 @@ http://www.freesfx.co.uk/sfx/roll?p=3 (see license terms)
 				</div>
 				<div class="form-group">
 					<label for="description">Description</label>
-					<textarea name="description" ng-model="newIdea.description" class="form-control"></textarea>
+					<textarea rows="6" name="description" ng-model="newIdea.description" class="form-control"></textarea>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -171,18 +222,53 @@ http://www.freesfx.co.uk/sfx/roll?p=3 (see license terms)
 	</script>
 
 	<script type="text/ng-template" id="ideaDetail.html">
-		<div class='details'>
-			<div class="modal-header">
-				<h3>{{idea.title}}</h3>
+		<div ng-switch on="editing">
+			<form ng-switch-when="true" role="form" name="editIdeaForm">
+				<div class="modal-header">
+					<div class="form-group">
+						<input type="text" name="title" ng-model="editedIdea.title" class="form-control"/>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<textarea rows="6" name="description" ng-model="editedIdea.description" class="form-control"/></textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary" ng-click="save()">Save</button>
+					<button class="btn btn-default" ng-click="close()">Close</button>
+				</div>
+			</form>
+			<div ng-switch-default>
+				<div class="modal-header">
+					<h3>{{idea.title}}</h3>
+				</div>	
+				<div class="modal-body">
+					<div ng-bind-html="idea.description | markdown"></div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary" ng-click="edit()">Edit</button>
+					<button class="btn btn-danger" ng-click="delete()">Delete</button>
+					<button class="btn btn-default" ng-click="close()">Close</button>
+				</div>
 			</div>
-			<div class="modal-body">
-				<div ng-bind-html="idea.description | markdown"></div>
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-primary" ng-click="edit()">Edit</button>
-				<button class="btn btn-danger" ng-click="delete()">Delete</button>
-				<button class="btn btn-default" ng-click="close()">Close</button>
-			</div>
+		</div>
+	</script>
+
+	<script type="text/ng-template" id="preferences.html">
+		<div class='modal-header'>
+			<button type="button" ng-click="close()" class="close pull-right" aria-hidden="true">&times;</button>
+			<h3>Preferences</h3>
+		</div>
+		<div class="modal-body">
+			<a href="#" class="button" ng-click="toggleMute()">
+				<span ng-class="soundIcon()"></span>
+				<span class="shine"></span>
+				<span class="text">{{soundPreferenceMsg()}}</span>
+			</a>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" ng-click="close()">Close</button>	
 		</div>
 	</script>
 
@@ -191,10 +277,9 @@ http://www.freesfx.co.uk/sfx/roll?p=3 (see license terms)
 			<span class="shine"></span>
 			<span class="text">Add Idea</span>
 		</a>
-		<a href="#" class="button" onClick="mySound.stop()">
+		<a href="#" class="button pull-right" ng-click="openPreferences()">
 			<span class="shine"></span>
-			<span class="glyphicon glyphicon-volume-off"></span>
-			<span class="test">Turn off sound</span>
+			<span class="text">Preferences</span>
 		</a>
 	</div>
 	<div class="sticky" ng-class="{selected : hovered}" ng-repeat="idea in ideas" ng-mouseenter="mouseEnterEffect()" ng-mouseleave="mouseLeaveEffect()" ng-click="clickEffect()" ng-controller="IdeaCtrl">
