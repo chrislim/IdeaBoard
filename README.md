@@ -4,8 +4,8 @@ IdeaBoard is an experimental app that was designed to mimic the interactivity of
 You can run it locally and keep a board of your ideas.
 
 The default soundtrack loop was generated from GarageBand and the sound effects are from:
-* [http://www.pacdv.com/sounds/interface_sounds-3.html]
-* [http://www.freesfx.co.uk/sfx/roll?p=3] (note the license terms)
+* http://www.pacdv.com/sounds/interface_sounds-3.html
+* http://www.freesfx.co.uk/sfx/roll?p=3 (note the license terms)
 
 #Installation
 
@@ -35,7 +35,7 @@ Now you can run the following to start the server:
 npm start
 ```
 
-Visit [http://localhost:3000/] to interact with IdeaBoard!
+Visit http://localhost:3000/ (or whichever port you chose) to interact with IdeaBoard!
 
 Your ideas are persisted to disk so it is safe to shutdown the server and start it up another time.
 [Markdown](https://github.com/coreyti/showdown) is supported in the idea description field.
