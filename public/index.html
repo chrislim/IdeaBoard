@@ -33,6 +33,8 @@
 					},
 				  'update': { method: 'PUT', transformRequest: function (data, headersGetter) {
 						return angular.toJson({ 'ideas' : [data] });
+						}, transformResponse: function (data, headersGetter) {
+						return angular.fromJson(data).ideas[0];
 						}
 					}  
 				});
@@ -167,7 +169,7 @@
 			};
 			$scope.save = function () {
 				_.assign($scope.idea, $scope.editedIdea);
-				$scope.editedIdea.$update();	
+				$scope.editedIdea.$update();
 				$scope.editing = false;
 			};
 			$scope.confirmDeletion = false; 
