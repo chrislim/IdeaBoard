@@ -207,3 +207,7 @@ audio {
 	right: 0px;
 }
 
+.ib-inline-alert {
+	margin-bottom: 0px;
+	padding: 6px 12px;
+}

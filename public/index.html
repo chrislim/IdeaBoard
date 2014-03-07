@@ -169,7 +169,11 @@
 			};
 			$scope.save = function () {
 				_.assign($scope.idea, $scope.editedIdea);
-				$scope.editedIdea.$update();
+				$scope.editedIdea.$update({}, function (){
+					$scope.success = true;
+				}, function (httpResponse) {
+					$scope.error = true;
+				});
 				$scope.editing = false;
 			};
 			$scope.confirmDeletion = false; 
@@ -241,6 +245,7 @@
 				</div>
 			</form>
 			<div ng-switch-default>
+				
 				<div class="modal-header">
 					<h3>{{idea.title}}</h3>
 				</div>	
@@ -248,6 +253,12 @@
 					<div ng-bind-html="idea.description | markdown"></div>
 				</div>
 				<div class="modal-footer" ng-show="!confirmDeletion">
+					<div class="pull-left alert alert-success ib-inline-alert" ng-show="success">
+						<strong>Success!</strong> Your changes were saved. 
+					</div>
+					<div class="pull-left alert alert-danger ib-inline-alert" ng-show="error">
+						<strong>Warning!</strong> Your changes could not be saved. 
+					</div>
 					<button class="btn btn-primary" ng-click="edit()">Edit</button>
 					<button class="btn btn-danger" ng-click="confirmDeletion = true">Delete</button>
 					<button class="btn btn-default" ng-click="close()">Close</button>
